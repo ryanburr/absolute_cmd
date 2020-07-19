@@ -50,7 +50,7 @@ export class YoutubeClient {
     const title = await this._parseAttributeFromElement(element, '@title');
     const metadata = await this._parseAttributeFromElement(element, '@aria-label');
     const url = await this._parseAttributeFromElement(element, '@href') as string;
-    const id = url.split('=')[1];
+    const id = url?.split('=')[1];
 
     return {
       id,
