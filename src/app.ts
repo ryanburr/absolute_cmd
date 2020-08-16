@@ -3,6 +3,7 @@ import cors from 'cors';
 import { getClient as getSpotifyClient } from './lib/spotify';
 import { getClient as getBeatportClient } from './lib/beatport';
 import { getClient as getYoutubeClient } from './lib/youtube';
+import { getClient as getSoundcloudClient } from './lib/soundcloud';
 import { assert } from 'console';
 
 const {SPOTIFY_CLIENT_ID} = process.env;
@@ -134,6 +135,25 @@ app.get('/youtube/watch', async (req, res) => {
     const response = await client.getTrack(v, name as string);
     
     return res.send({});
+  } catch (err) {
+    console.error('Failed to search for tracks');
+    return res.status(500).send({message: err.message});
+  }
+});
+
+
+app.get('/soundcloud/search', async (req, res) => {
+  try {
+    const { query } = req.query;
+    if (typeof query !== 'string') {
+      return res.status(400).send({message: 'query param must be of type string'});
+    }
+
+    const client = getSoundcloudClient();
+
+    const response = await client.search(query);
+    
+    return res.send(response);
   } catch (err) {
     console.error('Failed to search for tracks');
     return res.status(500).send({message: err.message});
