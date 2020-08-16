@@ -62,7 +62,7 @@ export class BeatPort {
   private async getTrackInfoFromDetail(page: puppeteer.Page): Promise<any> {
     const title = await this._parseTextContent(page, '.interior-title > h1:first-of-type');
     const remix = await this._parseTextContent(page, '.interior-title > h1:last-of-type');
-    const artists = (await this._parseTextContent(page, '.interior-track-artists .value > a')).split(', ').map(x => x.trim()).join(', ');
+    const artists = (await this._parseTextContent(page, '.interior-track-artists .value')).split(',').map(x => x.trim()).join(', ');
     
     const releaseDate = await this._parseTextContent(page, '.interior-track-content-item.interior-track-released > .value');
     const genre = (await this._parseTextContent(page, '.interior-track-content-item.interior-track-genre > .value')).split(', ').map(x => x.trim()).join(', ');
@@ -87,7 +87,7 @@ export class BeatPort {
     const title = await this._parseTextContent(element, '.buk-track-primary-title');
     const remix = await this._parseTextContent(element, '.buk-track-remixed');
     
-    const artists = await this._parseTextContent(element, '.buk-track-artists > a');
+    const artists = await this._parseTextContent(element, '.buk-track-artists');
     const labels = await this._parseTextContent(element, '.buk-track-labels > a');
     
     const genre = await this._parseTextContent(element, '.buk-track-genre > a');
