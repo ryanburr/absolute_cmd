@@ -1,15 +1,42 @@
 import puppeteer from 'puppeteer';
-import { getClient as getDownloadClient } from './download';
+import fs from 'fs';
+import path from 'path';
+import soundcloudDownloader from 'soundcloud-downloader';
+import { Stream } from 'stream';
+import { needsDefinitionPath } from '../commands/constants';
 
 export class SoundcloudClient {
 
   private readonly _url = 'https://soundcloud.com';
   private readonly _itemSelector = '.searchItem__trackItem.track'; 
 
-  public async getTrack(id: string, name: string) {
+  public async getTrack(uri: string, fileName: string) {
     try {
-      const downloadClient = getDownloadClient();
-      await downloadClient.getTrack(id, name);
+      const sanitizedName = 
+        fileName
+          .replace('.', '')
+          .replace(':', '')
+          .replace('/', '')
+          .replace('?', '')
+          .replace('<', '')
+          .replace('>', '')
+          .replace('\\', '')
+          .replace('*', '')
+          .replace('|', '')
+          .replace('"', '');
+
+      console.log(`writing file ${sanitizedName}`);
+      
+      await new Promise(async (resolve, reject) => {
+        const stream: Stream = await soundcloudDownloader.download(`${this._url}${uri}`);
+
+        stream.pipe(fs.createWriteStream(path.join(needsDefinitionPath, sanitizedName)));
+        
+        stream.on('end', () => resolve());
+        stream.on('error', (err) => reject(err));
+      });
+
+      console.log(`${sanitizedName} saved`);
     } catch (err) {
       console.error(err);
       throw err;
@@ -21,11 +48,11 @@ export class SoundcloudClient {
       
       const browser = await puppeteer.launch();
       const page = await browser.newPage();
+      
       await page.goto(`${this._url}/search?q=${query.replace(' ', '%20')}`);
+      await page.waitForSelector(this._itemSelector);
 
       const tracks = await page.$$(this._itemSelector);
-
-      console.log('test');
       
       console.log(`${tracks.length} tracks found.`);
 
@@ -49,7 +76,7 @@ export class SoundcloudClient {
   }
 
   private async getTrackInfoFromSearch(page: puppeteer.Page, element: puppeteer.ElementHandle<Element>): Promise<any> {
-    const artist = await this._parseTextContent(element, '.soundTitle__secondary');
+    const artist = (await this._parseTextContent(element, '.soundTitle__secondary'));
     const title = await this._parseTextContent(element, '.soundTitle__title');
     const href = await element.$eval('.soundTitle__title', (el) => el.getAttribute('href'));
     // const href = await this._parseAttributeFromElement(titleElement, '@href') as string;
@@ -86,7 +113,7 @@ export class SoundcloudClient {
       if (!el || !el[0]) {
         throw new Error(`No element found with selector '${selector}'`);
       }
-      return el[0].textContent;
+      return el[0].textContent.trim();
     });
   }
 }

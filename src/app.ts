@@ -160,6 +160,27 @@ app.get('/soundcloud/search', async (req, res) => {
   }
 });
 
+app.get('/soundcloud/download', async (req, res) => {
+  try {
+    const { uri, name } = req.query;
+    if (typeof uri !== 'string') {
+      return res.status(400).send({message: 'uri param must be of type string'});
+    }
+    if (typeof name !== 'string') {
+      return res.status(400).send({message: 'name param must be of type string'});
+    }
+
+    const client = getSoundcloudClient();
+
+    await client.getTrack(uri, name.trim());
+    
+    return res.send({});
+  } catch (err) {
+    console.error('Failed to search for tracks');
+    return res.status(500).send({message: err.message});
+  }
+});
+
 app.listen(port, () => {
   console.log(`service started... listening on port ${port}`);
 });
