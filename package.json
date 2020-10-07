@@ -12,7 +12,6 @@
     "sort": "ts-node dist/commands/sort_by_genre.js",
     "prefind-no-genre": "npm run build",
     "find-no-genre": "ts-node dist/commands/find_no_genre.js",
-    "populate": "ts-node dist/commands/populate_info.js",
     "clean": "rimraf dist",
     "prebuild": "npm run clean",
     "build": "tsc",
