@@ -1,6 +1,5 @@
-import path from 'path';
 import YoutubeDownloader from 'youtube-mp3-downloader';
-import { ffmpegPath, needsDefinitionPath } from '../commands/constants';
+import { ffmpegPath, downloadPath } from '../commands/constants';
 
 export class DownloadClient {
   private _downloader: YoutubeDownloader;
@@ -8,8 +7,8 @@ export class DownloadClient {
 
   constructor() {
     this._downloader = new YoutubeDownloader({
-      ffmpegPath: path.join(ffmpegPath, 'ffmpeg.exe'),
-      outputPath: needsDefinitionPath,
+      ffmpegPath,
+      outputPath: downloadPath,
       queueParallelism: 1,
       progressTimeout: 5000,
       youtubeVideoQuality: 'highest',

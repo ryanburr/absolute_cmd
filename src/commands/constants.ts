@@ -1,15 +1,24 @@
+import * as fs from 'fs'; 
 import * as path from 'path'; 
 
-export const rootDir = path.join('B:', 'Burr', 'Music', 'Absolute Zero');
-export const needsDefinitionPath = path.join(rootDir, 'Needs Definition');
-export const needsSortingPath = path.join(rootDir, 'Need to Sort');
-export const genresPath = path.join(rootDir, 'Genre');
-export const ffmpegPath = path.join(
-    'C:',
-    'Users',
-    'Ryan-ASUS',
-    'Desktop',
-    'LiveStream',
-    'ffmpeg',
-    'bin'
-);
+const { DOWNLOAD_PATH, FFMPEG_PATH } = process.env;
+
+if (!FFMPEG_PATH) {
+    throw new Error('Missing environment variable: FFMPEG_PATH');
+}
+export const ffmpegPath = path.resolve(FFMPEG_PATH);
+
+if (!fs.existsSync(ffmpegPath)) {
+    throw new Error(`FFMPEG_PATH not found: "${ffmpegPath}"`);
+}
+console.log(`FFMPEG_PATH found: "${ffmpegPath}"`);
+
+if (!DOWNLOAD_PATH) {
+    throw new Error('Missing environment variable: DOWNLOAD_PATH');
+}
+export const downloadPath = path.resolve(DOWNLOAD_PATH);
+
+if (!fs.existsSync(downloadPath)) {
+    throw new Error(`DOWNLOAD_PATH not found: "${downloadPath}"`);
+}
+console.log(`DOWNLOAD_PATH found: "${downloadPath}"`);

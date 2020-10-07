@@ -3,7 +3,7 @@ import fs from 'fs';
 import path from 'path';
 import soundcloudDownloader from 'soundcloud-downloader';
 import { Stream } from 'stream';
-import { needsDefinitionPath } from '../commands/constants';
+import { downloadPath } from '../commands/constants';
 
 export class SoundcloudClient {
 
@@ -30,7 +30,7 @@ export class SoundcloudClient {
       await new Promise(async (resolve, reject) => {
         const stream: Stream = await soundcloudDownloader.download(`${this._url}${uri}`);
 
-        stream.pipe(fs.createWriteStream(path.join(needsDefinitionPath, sanitizedName)));
+        stream.pipe(fs.createWriteStream(path.join(downloadPath, sanitizedName)));
         
         stream.on('end', () => resolve());
         stream.on('error', (err) => reject(err));
